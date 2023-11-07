@@ -1,0 +1,41 @@
+drop procedure if exists Grade();
+delimiter //
+
+create procedure Grade()
+begin
+	declare r int;
+	declare n varchar(20);
+	declare m int;
+	declare c varchar(20);
+	declare done int default 0;
+	
+	declare student cursor for select * from Stud_Marks;
+	declare continue handler for not found set done = 1;
+	
+	open student;
+	loop_lable: LOOP
+		fetch student into r, n, m;
+		
+		if done = 1 then
+			leave loop_lable;
+		end if;
+		
+		if ( m <= 1500 and m >= 990) then
+			set c = "Distinction";
+		elseif ( m <= 989 and m >= 900) then
+			set c = "First";
+		elseif ( m <= 899 and m >= 825) then
+			set c = "Second";
+		else
+			set c = "Pass";
+		end if;
+		
+		insert into Result values(r, n, c);
+	end LOOP;
+	close student;
+end;
+//
+
+delimiter ;
+		  
+	

@@ -1,0 +1,27 @@
+drop procedure if exists merge_cursor;
+delimiter //
+
+create procedure merge_cursor()
+begin
+	declare r int;
+	declare n varchar(20);
+	declare done int default 0;
+	
+	declare student cursor for select * from O_RollCall where Rollno not in ( select Rollno from N_RollCall);
+	declare continue handler for not found set done = 1;
+	
+	open student;
+	loop_lable: LOOP
+		fetch student into r,n;
+		
+		if done = 1 then
+			leave loop_lable;
+		end if;
+		
+		insert into N_RollCall values(r, n);
+	end LOOP;
+	close student;
+end;
+//
+
+delimiter ; 

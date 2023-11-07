@@ -1,0 +1,30 @@
+drop procedure if exists p_fine;
+delimiter //
+
+create procedure p_fine( in Rno int, in Book_name varchar(20))
+begin
+	declare DIO date;
+	declare Day_Count int;
+	declare Fine_Amount numeric(10,3);
+  
+	select DateOfIssue into DIO from Borrower where NameOfBook = Book_name and Rollno = Rno;
+	select datediff( now(), DIO) into Day_Count;
+  
+	if( Day_Count >= 15 and Day_Count <= 30) then
+		set Fine_Amount = Day_Count*5;
+		insert into Fine values( Rno, now(), Fine_Amount);
+		update Borrower set Status = 'R' where Rollno = Rno;
+  
+	elseif( Day_Count > 30) then
+		set Fine_Amount = Day_Count*50;
+		insert into Fine values( Rno, now(), Fine_Amount);
+		update Borrower set Status = 'R' where Rollno = Rno;
+  
+	else
+		update Borrower set Status = 'R' where Rollno = Rno;
+  
+	end if;
+end;
+//
+
+delimiter ;

@@ -1,0 +1,26 @@
+drop trigger if exists make_audit1;
+delimiter //
+
+create trigger make_audit1 
+after delete on lib_book 
+for each row
+begin
+	insert into lib_audit values(old.bid, old.bname, old.qty);
+end;
+//
+
+delimiter ;
+
+
+drop trigger if exists make_audit2;
+delimiter //
+
+create trigger make_audit2
+after update on lib_book
+for each row
+begin
+	insert into lib_audit values(old.bid, old.bname, old.qty);
+end;
+//
+
+delimiter ;

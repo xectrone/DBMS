@@ -1,0 +1,23 @@
+drop procedure if exists Circle_Area;
+delimiter //
+
+create procedure Circle_Area()
+begin
+	declare r int;
+	declare a float;
+	
+	set r = 5;
+	
+	loop_lable:LOOP
+		if r > 9 then
+			leave loop_lable;
+		end if;
+		
+		set a = 3.14*r*r;
+		insert into Circle values(r, a);
+		set r = r+1;
+	end LOOP;
+end;
+//
+
+delimiter ;

@@ -1,0 +1,46 @@
+> use CA3
+switched to db CA3
+
+> db.createCollection('order')
+{ "ok" : 1 }
+
+
+
+> db.order.insert({id:1, amount:500, status:'A'})
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({id:1, amount:250, status:'A'})
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({id:2, amount:200, status:'A'})
+WriteResult({ "nInserted" : 1 })
+> db.order.insert({id:1, amount:300, status:'D'})
+WriteResult({ "nInserted" : 1 })
+
+
+> db.order.find()
+{ "_id" : ObjectId("654912cb85bca19ab53b310d"), "id" : 1, "amount" : 500, "status" : "A" }
+{ "_id" : ObjectId("654912d585bca19ab53b310e"), "id" : 1, "amount" : 250, "status" : "A" }
+{ "_id" : ObjectId("654912e285bca19ab53b310f"), "id" : 2, "amount" : 200, "status" : "A" }
+{ "_id" : ObjectId("654912ee85bca19ab53b3110"), "id" : 1, "amount" : 300, "status" : "D" }
+
+
+> db.order.mapReduce(
+... function(){emit(this.id, this.amount)},
+... function(key, values){return Array.sum(values)},
+... {query:{status:'A'}, out:'total_order'}
+... )
+{
+        "result" : "total_order",
+        "timeMillis" : 17,
+        "counts" : {
+                "input" : 3,
+                "emit" : 3,
+                "reduce" : 1,
+                "output" : 2
+        },
+        "ok" : 1
+}
+
+
+> db.total_order.find()
+{ "_id" : 1, "value" : 750 }
+{ "_id" : 2, "value" : 200 }

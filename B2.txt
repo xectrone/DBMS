@@ -1,0 +1,151 @@
+> db.createCollection('College')
+{ "ok" : 1 }
+
+> db.College.insert({Name:'A', Branch:'Computer', Marks:10, Hobbies:['Chess', 'Coding']})
+WriteResult({ "nInserted" : 1 })
+> db.College.insert({Name:'B', Branch:'Electrical', Marks:9, Hobbies:['Football', 'Coding']} )
+WriteResult({ "nInserted" : 1 })
+> db.College.insert({Name:'C', Branch:'Computer', Marks:8, Hobbies:['Football', 'Video Games']} )
+WriteResult({ "nInserted" : 1 })
+> db.College.insert({Name:'D', Branch:'Electrical', Marks:7, Hobbies:['Football', 'Coding', 'Video Games']} )
+WriteResult({ "nInserted" : 1 })
+
+> db.College.find().pretty()
+{
+        "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"),
+        "Name" : "A",
+        "Branch" : "Computer",
+        "Marks" : 10,
+        "Hobbies" : [
+                "Chess",
+                "Coding"
+        ]
+}
+{
+        "_id" : ObjectId("6547c4b71c1e46a205cc0b3f"),
+        "Name" : "B",
+        "Branch" : "Electrical",
+        "Marks" : 9,
+        "Hobbies" : [
+                "Football",
+                "Coding"
+        ]
+}
+{
+        "_id" : ObjectId("6547c4dd1c1e46a205cc0b40"),
+        "Name" : "C",
+        "Branch" : "Computer",
+        "Marks" : 8,
+        "Hobbies" : [
+                "Football",
+                "Video Games"
+        ]
+}
+{
+        "_id" : ObjectId("6547c51d1c1e46a205cc0b41"),
+        "Name" : "D",
+        "Branch" : "Electrical",
+        "Marks" : 7,
+        "Hobbies" : [
+                "Football",
+                "Coding",
+                "Video Games"
+        ]
+}
+
+> db.College.aggregate([{$match:{Branch:'Computer'}}])
+{ "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"), "Name" : "A", "Branch" : "Computer", "Marks" : 10, "Hobbies" : [ "Chess", "Coding" ] }
+{ "_id" : ObjectId("6547c4dd1c1e46a205cc0b40"), "Name" : "C", "Branch" : "Computer", "Marks" : 8, "Hobbies" : [ "Football", "Video Games" ] }
+
+> db.College.aggregate([{$group:{_id:'$Branch', Total_Marks:{$sum:'$Marks'}}}])
+{ "_id" : "Electrical", "Total_Marks" : 16 }
+{ "_id" : "Computer", "Total_Marks" : 18 }
+
+> db.College.aggregate([{$group:{_id:'$Branch', Average_Marks:{$avg:'$Marks'}}}])
+{ "_id" : "Electrical", "Average_Marks" : 8 }
+{ "_id" : "Computer", "Average_Marks" : 9 }
+
+> db.College.aggregate([{$group:{_id:'$Branch', Minimum_Marks:{$min:'$Marks'}}}])
+{ "_id" : "Electrical", "Minimum_Marks" : 7 }
+{ "_id" : "Computer", "Minimum_Marks" : 8 }
+
+> db.College.aggregate([{$group:{_id:'$Branch', Maximum_Marks:{$max:'$Marks'}}}])
+{ "_id" : "Electrical", "Maximum_Marks" : 9 }
+{ "_id" : "Computer", "Maximum_Marks" : 10 }
+
+> db.College.aggregate([{$match:{Marks:{$gt:8}}}])
+{ "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"), "Name" : "A", "Branch" : "Computer", "Marks" : 10, "Hobbies" : [ "Chess", "Coding" ] }
+{ "_id" : ObjectId("6547c4b71c1e46a205cc0b3f"), "Name" : "B", "Branch" : "Electrical", "Marks" : 9, "Hobbies" : [ "Football", "Coding" ] }
+
+> db.College.aggregate([{$match:{Marks:{$lt:8}}}])
+{ "_id" : ObjectId("6547c51d1c1e46a205cc0b41"), "Name" : "D", "Branch" : "Electrical", "Marks" : 7, "Hobbies" : [ "Football", "Coding", "Video Games" ] }
+
+> db.College.aggregate([{$sort:{Marks:1}}])
+{ "_id" : ObjectId("6547c51d1c1e46a205cc0b41"), "Name" : "D", "Branch" : "Electrical", "Marks" : 7, "Hobbies" : [ "Football", "Coding", "Video Games" ] }
+{ "_id" : ObjectId("6547c4dd1c1e46a205cc0b40"), "Name" : "C", "Branch" : "Computer", "Marks" : 8, "Hobbies" : [ "Football", "Video Games" ] }
+{ "_id" : ObjectId("6547c4b71c1e46a205cc0b3f"), "Name" : "B", "Branch" : "Electrical", "Marks" : 9, "Hobbies" : [ "Football", "Coding" ] }
+{ "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"), "Name" : "A", "Branch" : "Computer", "Marks" : 10, "Hobbies" : [ "Chess", "Coding" ] }
+
+> db.College.aggregate([{$sort:{Marks:-1}}])
+{ "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"), "Name" : "A", "Branch" : "Computer", "Marks" : 10, "Hobbies" : [ "Chess", "Coding" ] }
+{ "_id" : ObjectId("6547c4b71c1e46a205cc0b3f"), "Name" : "B", "Branch" : "Electrical", "Marks" : 9, "Hobbies" : [ "Football", "Coding" ] }
+{ "_id" : ObjectId("6547c4dd1c1e46a205cc0b40"), "Name" : "C", "Branch" : "Computer", "Marks" : 8, "Hobbies" : [ "Football", "Video Games" ] }
+{ "_id" : ObjectId("6547c51d1c1e46a205cc0b41"), "Name" : "D", "Branch" : "Electrical", "Marks" : 7, "Hobbies" : [ "Football", "Coding", "Video Games" ] }
+
+> db.College.aggregate([{$unwind:'$Hobbies'}])
+{ "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"), "Name" : "A", "Branch" : "Computer", "Marks" : 10, "Hobbies" : "Chess" }
+{ "_id" : ObjectId("6547c46b1c1e46a205cc0b3e"), "Name" : "A", "Branch" : "Computer", "Marks" : 10, "Hobbies" : "Coding" }
+{ "_id" : ObjectId("6547c4b71c1e46a205cc0b3f"), "Name" : "B", "Branch" : "Electrical", "Marks" : 9, "Hobbies" : "Football" }
+{ "_id" : ObjectId("6547c4b71c1e46a205cc0b3f"), "Name" : "B", "Branch" : "Electrical", "Marks" : 9, "Hobbies" : "Coding" }
+{ "_id" : ObjectId("6547c4dd1c1e46a205cc0b40"), "Name" : "C", "Branch" : "Computer", "Marks" : 8, "Hobbies" : "Football" }
+{ "_id" : ObjectId("6547c4dd1c1e46a205cc0b40"), "Name" : "C", "Branch" : "Computer", "Marks" : 8, "Hobbies" : "Video Games" }
+{ "_id" : ObjectId("6547c51d1c1e46a205cc0b41"), "Name" : "D", "Branch" : "Electrical", "Marks" : 7, "Hobbies" : "Football" }
+{ "_id" : ObjectId("6547c51d1c1e46a205cc0b41"), "Name" : "D", "Branch" : "Electrical", "Marks" : 7, "Hobbies" : "Coding" }
+{ "_id" : ObjectId("6547c51d1c1e46a205cc0b41"), "Name" : "D", "Branch" : "Electrical", "Marks" : 7, "Hobbies" : "Video Games" }
+
+
+
+
+
+> db.College.createIndex({'Name':1})
+{
+        "createdCollectionAutomatically" : false,
+        "numIndexesBefore" : 1,
+        "numIndexesAfter" : 2,
+        "ok" : 1
+}
+> db.College.getIndexes()
+[
+        {
+                "v" : 1,
+                "key" : {
+                        "_id" : 1
+                },
+                "name" : "_id_",
+                "ns" : "A2.College"
+        },
+        {
+                "v" : 1,
+                "key" : {
+                        "Name" : 1
+                },
+                "name" : "Name_1",
+                "ns" : "A2.College"
+        }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
